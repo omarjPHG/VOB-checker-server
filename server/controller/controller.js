@@ -70,7 +70,7 @@ const dbLoading = {
             'callInDate': new Date()
         })
         .then(response => {
-            res.send(`Interface Added ${loc} - ${prefix} - ${dailyRate} UPDATED: ${lastUpdate}`).status(200)
+            res.send(`Interface Added ${insuranceLoc} - ${prefix} - ${dailyRate} UPDATED: ${lastUpdate}`).status(200)
         })
         .catch(error => {
             res.send(`Error: ${error}`).status(400)
