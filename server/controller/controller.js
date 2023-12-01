@@ -33,7 +33,7 @@ const garyController = {
             })
             insurances.length === 1
                 ? addCustomer(customerName, insurances, res)
-                : null
+                : res.send(`Error: grabbing the insurance`).status(400)
         })
     }
 }
