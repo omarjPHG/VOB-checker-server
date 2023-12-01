@@ -1,8 +1,8 @@
 const router = require('express').Router()
 const { garyController, dbLoading } = require('../controller/controller')
 
-router.route('/db-search')
-    .get(garyController.get)
+router.route('/gary-search')
+    .post(garyController.post)
 
 router.route('/db-load')
     .post(dbLoading.post)

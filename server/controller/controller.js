@@ -1,10 +1,45 @@
 const { db } = require('../bin/utils/Firebase')
-const { addDoc, collection } = require('firebase/firestore')
+const { addDoc, collection, query, where, onSnapshot } = require('firebase/firestore')
+
+const addCustomer = (customerName, insurances, res) => {
+    const collectionCustomerRef = collection(db, 'Customers')
+    addDoc(collectionCustomerRef, {
+        'customerName':customerName,
+        'insurance': insurances
+    })
+    .then(response => {
+        res.send('User Information Was Inputted Into Database').status(200)
+    })
+    .catch(error => {
+        console.error(error)
+        res.send(`Error: ${error}`).status(400)
+    })
+}
 
 const garyController = {
-    get: (req, res) => {
-        res.send('Gary Controller').status(200)
+    post: (req, res) => {
+        const customerName = req.body.customerName
+        const insurnaceName = req.body.insuranceName 
+        const insurancePrefix = req.body.insurancePrefix 
+        const collectionRef = collection(db, 'CurrentInsurance')
+        let q = query(collectionRef, 
+            where('insuranceName', '==', insurnaceName), 
+            where('insurancePrefix', '==', insurancePrefix))
+        onSnapshot(q, snapshot => {
+            const insurances = []
+            snapshot.docs.forEach(doc => {
+                console.log(doc.data())
+                insurances.push(doc.data())
+            })
+            insurances.length === 1
+                ? addCustomer(customerName, insurances, res)
+                : null
+        })
     }
+}
+
+const interfaceController = {
+
 }
 
 const dbLoading = {
