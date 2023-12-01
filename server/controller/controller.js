@@ -39,7 +39,18 @@ const garyController = {
 }
 
 const interfaceController = {
-
+    get: (req, res) => {
+        const collectionRef = collection(db, 'Customers')
+        const q = query(collectionRef)
+        onSnapshot(q, snapshot => {
+            let customerList = []
+            snapshot.docs.forEach(doc => {
+                customerList.push(doc.data())
+            })
+            console.log(customerList)
+            res.send(customerList).status(200)
+        })
+    }
 }
 
 const dbLoading = {
@@ -48,14 +59,15 @@ const dbLoading = {
         let prefix = req.body.prefix 
         let dailyRate = req.body.dailyRate 
         let lastUpdate = req.body.lastUpdate
-        let validation = req.body.validation
+        let evaluation = req.body.evaluation
         let collectionRef = collection(db, 'CurrentInsurance')
         addDoc(collectionRef, {
             'insuranceName': insurance,
             'insurancePrefix': prefix,
             'dailyRate': dailyRate,
             'lastUpdate': lastUpdate,
-            'validation': validation
+            'evaluation': evaluation,
+            'callInDate': new Date()
         })
         .then(response => {
             res.send(`Interface Added ${insurance} - ${prefix} - ${dailyRate} UPDATED: ${lastUpdate}`).status(200)
@@ -66,4 +78,4 @@ const dbLoading = {
     }
 }
 
-module.exports = {garyController, dbLoading}
+module.exports = {garyController, dbLoading, interfaceController}
