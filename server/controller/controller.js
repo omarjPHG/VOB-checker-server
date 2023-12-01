@@ -19,11 +19,11 @@ const addCustomer = (customerName, insurances, res) => {
 const garyController = {
     post: (req, res) => {
         const customerName = req.body.customerName
-        const insurnaceName = req.body.insuranceName 
+        const insuranceLoc = req.body.insuranceLoc 
         const insurancePrefix = req.body.insurancePrefix 
         const collectionRef = collection(db, 'CurrentInsurance')
         let q = query(collectionRef, 
-            where('insuranceName', '==', insurnaceName), 
+            where('insuranceLoc', '==', insuranceLoc), 
             where('insurancePrefix', '==', insurancePrefix))
         onSnapshot(q, snapshot => {
             const insurances = []
@@ -55,14 +55,14 @@ const interfaceController = {
 
 const dbLoading = {
     post: (req, res) => {
-        let insurance = req.body.insurance
+        let insuranceLoc = req.body.insuranceLoc
         let prefix = req.body.prefix 
         let dailyRate = req.body.dailyRate 
         let lastUpdate = req.body.lastUpdate
         let evaluation = req.body.evaluation
         let collectionRef = collection(db, 'CurrentInsurance')
         addDoc(collectionRef, {
-            'insuranceName': insurance,
+            'insuranceLoc': insuranceLoc,
             'insurancePrefix': prefix,
             'dailyRate': dailyRate,
             'lastUpdate': lastUpdate,
@@ -70,7 +70,7 @@ const dbLoading = {
             'callInDate': new Date()
         })
         .then(response => {
-            res.send(`Interface Added ${insurance} - ${prefix} - ${dailyRate} UPDATED: ${lastUpdate}`).status(200)
+            res.send(`Interface Added ${loc} - ${prefix} - ${dailyRate} UPDATED: ${lastUpdate}`).status(200)
         })
         .catch(error => {
             res.send(`Error: ${error}`).status(400)
