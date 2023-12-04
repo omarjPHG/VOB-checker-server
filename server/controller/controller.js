@@ -5,7 +5,12 @@ const addCustomer = (customerName, insurances, res) => {
     const collectionCustomerRef = collection(db, 'Customers')
     addDoc(collectionCustomerRef, {
         'customerName':customerName,
-        'insurance': insurances
+        'insurancePrefix': insurances[0].insurancePrefix,
+        'insuranceLoc': insurances[0].insuranceLoc,
+        'dailyRate': insurances[0].dailyRate,
+        'evaluation': insurances[0].evaluation,
+        'lastUpdate': insurances[0].lastUpdate,
+        'callInDate': insurances[0].callInDate,
     })
     .then(response => {
         res.send('User Information Was Inputted Into Database').status(200)
