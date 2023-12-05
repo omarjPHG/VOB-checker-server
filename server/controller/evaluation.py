@@ -2,7 +2,6 @@ import os
 import sys
 
 import openai
-from dotenv import load_dotenv
 import time
 from config import OPENAI_API_KEY
 
