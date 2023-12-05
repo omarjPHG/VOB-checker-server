@@ -85,7 +85,7 @@ const dbLoading = {
 
 const runPythonScript = (prefix) => {
     return new Promise((resolve, reject) => {
-        exec(`python ./server/controller/evaluation.py ${prefix}`, (error, stdout, stderr) => {
+        exec(`python3 ./server/controller/evaluation.py ${prefix}`, (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`);
                 reject(error);
