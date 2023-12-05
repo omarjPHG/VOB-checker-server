@@ -132,3 +132,5 @@ dist
 Firebaseconfig.js
 
 venv/
+
+config.py
