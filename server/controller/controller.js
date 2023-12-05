@@ -54,7 +54,7 @@ const dbLoading = {
         let lastUpdate = req.body.lastUpdate
         runPythonScript(insurancePrefix)
             .then(response => {
-                console.log(`python script response: ${response}`)
+                console.log(`python3 script response: ${response}`)
                 response.includes("Yes")
                     ? evaluationType = 'Yes'
                     : response.includes("No")
