@@ -59,7 +59,9 @@ const dbLoading = {
                     ? evaluationType = 'Yes'
                     : response.includes("No")
                         ? evaluationType = 'Yes'
-                        : evaluationType = 'Unknown'
+                        : response.includes("persistent technical issue")
+                            ? runPythonScript(insurancePrefix)
+                            : evaluationType = 'Unknown'
                 let collectionRef = collection(db, 'CurrentInsurance')
                 addDoc(collectionRef, {
                     'insuranceName': insuranceName,
