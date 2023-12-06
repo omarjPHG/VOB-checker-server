@@ -58,7 +58,7 @@ const dbLoading = {
                 response.includes("Yes")
                     ? evaluationType = 'Yes'
                     : response.includes("No")
-                        ? evaluationType = 'Yes'
+                        ? evaluationType = 'No'
                         : response.includes("persistent technical issue")
                             ? runPythonScript(insurancePrefix)
                             : evaluationType = 'Unknown'
