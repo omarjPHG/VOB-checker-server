@@ -54,30 +54,24 @@ const dbLoading = {
         let lastUpdate = req.body.lastUpdate
         runPythonScript(insurancePrefix)
             .then(response => {
-                console.log(`python3 script response: ${response}`)
-                response.includes("Yes")
-                    ? evaluationType = 'Yes'
-                    : response.includes("No")
-                        ? evaluationType = 'No'
-                        : response.includes("persistent technical issue")
-                            ? runPythonScript(insurancePrefix)
-                            : evaluationType = 'Unknown'
-                let collectionRef = collection(db, 'CurrentInsurance')
-                addDoc(collectionRef, {
+                let docData = {
                     'insuranceName': insuranceName,
                     'insuranceLoc': insuranceLoc,
                     'insurancePrefix': insurancePrefix,
                     'dailyRate': dailyRate,
                     'lastUpdate': lastUpdate,
-                    'evaluation': evaluationType,
+                    'evaluation': response.vob === null ? 'Unknown' : response.vob,
+                    'admitted': response.admitted === null ? 'Unknown' : response.vob,
                     'callInDate': new Date()
-                })
-                .then(response => {
-                    res.send(`Interface Added ${insuranceLoc} - ${insurancePrefix} - ${evaluationType}`).status(200)
-                })
-                .catch(error => {
-                    res.send(`Error: ${error}`).status(400)
-                })
+                }
+                let collectionRef = collection(db, 'CurrentInsurance')
+                addDoc(collectionRef, docData)
+                    .then(response => {
+                        res.send(`Interface Added${insuranceName} / ${insurancePrefix}`).status(200)
+                    })
+                    .catch(error => {
+                        res.send(`Error: ${error}`).status(400)
+                    })
             })
             .catch(error => {
                 console.error(`there was an error getting a response: `, error)
@@ -87,7 +81,7 @@ const dbLoading = {
 
 const runPythonScript = (prefix) => {
     return new Promise((resolve, reject) => {
-        exec(`python3 ./server/controller/evaluation.py ${prefix}`, (error, stdout, stderr) => {
+        exec(`python ./server/controller/evaluation.py ${prefix}`, (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`);
                 reject(error);
@@ -98,9 +92,31 @@ const runPythonScript = (prefix) => {
                 reject(stderr);
                 return;
             }
-            resolve(stdout);
+            console.log('stdout: ', stdout)
+            resolve(extractJsonObject(stdout));
         });
     });
 };
+
+function extractJsonObject(responseString) {
+    // Regular expression to find JSON object
+    const jsonRegex = /```json\s+({.*?})\s+```/s;
+
+    // Using the regular expression to extract the JSON string
+    const match = responseString.match(jsonRegex);
+
+    if (match && match[1]) {
+        // Parsing the JSON string to an actual JSON object
+        try {
+            return JSON.parse(match[1]);
+        } catch (error) {
+            console.error('Failed to parse JSON:', error);
+        }
+    } else {
+        console.log('No JSON object found in the response string.');
+    }
+
+    return null;
+}
 
 module.exports = {garyController, dbLoading, interfaceController}
