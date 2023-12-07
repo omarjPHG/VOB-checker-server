@@ -10,19 +10,16 @@ const garyController = {
         let docId
         const insuranceLoc = req.body.insuranceLoc 
         const insurancePrefix = req.body.insurancePrefix 
-        const question = `based on provided information, is '${insurancePrefix}' considered to be VOB good? if there are different instances, decide based on most instances. explain your reasoning step-by-step`;
         const collectionRef = collection(db, 'CurrentInsurance')
         let q = query(collectionRef, 
             where('insuranceLoc', '==', insuranceLoc), 
             where('insurancePrefix', '==', insurancePrefix))
         onSnapshot(q, snapshot => {
-            const insurances = []
             snapshot.docs.forEach(doc => {
-                insurances.push(doc.data())
-                docId = doc.id
+                res.send({data: doc.data(), id: doc.id}).status(200)
             })
+            res.send("Could not find matching insurance record").status(200)
         })
-        runAssistant(question)
         res.send("completed").status(200)
     },
 }
@@ -46,7 +43,6 @@ const interfaceController = {
 
 const dbLoading = {
     post: (req, res) => {
-        let evaluationType
         let insuranceName = req.body.insuranceName
         let insuranceLoc = req.body.insuranceLoc
         let insurancePrefix = req.body.insurancePrefix 
@@ -54,6 +50,7 @@ const dbLoading = {
         let lastUpdate = req.body.lastUpdate
         runPythonScript(insurancePrefix)
             .then(response => {
+                // res.send(`Interface Added${JSON.stringify(response)}`).status(200)
                 let docData = {
                     'insuranceName': insuranceName,
                     'insuranceLoc': insuranceLoc,
@@ -72,6 +69,7 @@ const dbLoading = {
                     .catch(error => {
                         res.send(`Error: ${error}`).status(400)
                     })
+                
             })
             .catch(error => {
                 console.error(`there was an error getting a response: `, error)
@@ -80,8 +78,9 @@ const dbLoading = {
 }
 
 const runPythonScript = (prefix) => {
+    console.log('Sending python request')
     return new Promise((resolve, reject) => {
-        exec(`python ./server/controller/evaluation.py ${prefix}`, (error, stdout, stderr) => {
+        exec(`python3 ./server/controller/evaluation.py ${prefix}`, (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`);
                 reject(error);
@@ -92,7 +91,6 @@ const runPythonScript = (prefix) => {
                 reject(stderr);
                 return;
             }
-            console.log('stdout: ', stdout)
             resolve(extractJsonObject(stdout));
         });
     });
@@ -103,6 +101,7 @@ function extractJsonObject(responseString) {
     const jsonRegex = /```json\s+({.*?})\s+```/s;
 
     // Using the regular expression to extract the JSON string
+
     const match = responseString.match(jsonRegex);
 
     if (match && match[1]) {
