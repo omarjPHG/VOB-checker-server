@@ -7,7 +7,6 @@ const { exec } = require('child_process');
 
 const garyController = {
     post: (req, res) => {
-        const insuranceLoc = req.body.insuranceLoc 
         const insurancePrefix = req.body.insurancePrefix 
         const collectionRef = collection(db, 'CurrentInsurance')
         let q = query(collectionRef, 
