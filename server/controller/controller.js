@@ -9,8 +9,14 @@ const garyController = {
     post: (req, res) => {
         let insurancePrefix = req.body.insurancePrefix 
         if(insurancePrefix.length > 3){
-            insurancePrefix = insurancePrefix.substring(0, 3)
+            if(insurancePrefix.includes(': ')){
+                let splitInsurance = insurancePrefix.split(': ')
+                insurancePrefix = splitInsurance[1].substring(0, 3)
+            } else {
+                insurancePrefix = insurancePrefix.substring(0, 3)
+            }
         }
+        console.log(insurancePrefix)
         const collectionRef = collection(db, 'CurrentInsurance')
         let q = query(collectionRef, 
             where('insurancePrefix', '==', insurancePrefix))
