@@ -7,20 +7,25 @@ const { exec } = require('child_process');
 
 const garyController = {
     post: (req, res) => {
-        let docId
         const insuranceLoc = req.body.insuranceLoc 
         const insurancePrefix = req.body.insurancePrefix 
         const collectionRef = collection(db, 'CurrentInsurance')
         let q = query(collectionRef, 
             where('insuranceLoc', '==', insuranceLoc), 
             where('insurancePrefix', '==', insurancePrefix))
+        
+        let results = [];
         onSnapshot(q, snapshot => {
             snapshot.docs.forEach(doc => {
-                res.send({data: doc.data(), id: doc.id}).status(200)
-            })
-            res.send("Could not find matching insurance record").status(200)
-        })
-        res.send("completed").status(200)
+                results.push({data: doc.data(), id: doc.id});
+            });
+
+            if (results.length > 0) {
+                res.status(200).send(results);
+            } else {
+                res.status(404).send("Could not find matching insurance record");
+            }
+        });
     },
 }
 
