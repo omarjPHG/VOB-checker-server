@@ -29,7 +29,7 @@ const garyController = {
             if (results.length > 0) {
                 res.status(200).send(results);
             } else {
-                res.status(404).send("Could not find matching insurance record");
+                res.status(404).send(`Could not find matching insurance record with the prefix ${insurancePrefix}`);
             }
         });
     },
