@@ -7,11 +7,13 @@ const { exec } = require('child_process');
 
 const garyController = {
     post: (req, res) => {
-        const insurancePrefix = req.body.insurancePrefix 
+        let insurancePrefix = req.body.insurancePrefix 
+        if(insurancePrefix.length > 3){
+            insurancePrefix = insurancePrefix.substring(0, 3)
+        }
         const collectionRef = collection(db, 'CurrentInsurance')
         let q = query(collectionRef, 
             where('insurancePrefix', '==', insurancePrefix))
-        
         let results = [];
         onSnapshot(q, snapshot => {
             snapshot.docs.forEach(doc => {
