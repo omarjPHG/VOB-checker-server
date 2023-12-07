@@ -11,7 +11,6 @@ const garyController = {
         const insurancePrefix = req.body.insurancePrefix 
         const collectionRef = collection(db, 'CurrentInsurance')
         let q = query(collectionRef, 
-            where('insuranceLoc', '==', insuranceLoc), 
             where('insurancePrefix', '==', insurancePrefix))
         
         let results = [];
