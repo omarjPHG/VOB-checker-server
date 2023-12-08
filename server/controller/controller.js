@@ -29,7 +29,7 @@ const garyController = {
             if (results.length > 0) {
                 res.status(200).send(results);
             } else {
-                res.status(404).send(`Could not find matching insurance record with the prefix ${insurancePrefix}`);
+                res.status(200).send(`Could not find matching insurance record with the prefix ${insurancePrefix}`);
             }
         });
     },
@@ -68,7 +68,7 @@ const dbLoading = {
                     'insurancePrefix': insurancePrefix,
                     'dailyRate': dailyRate,
                     'lastUpdate': lastUpdate,
-                    'evaluation': response.vob === null ? 'Unknown' : response.vob,
+                    'vob': response.vob === null ? 'Unknown' : response.vob,
                     'admitted': response.admitted === null ? 'Unknown' : response.vob,
                     'callInDate': new Date()
                 }
