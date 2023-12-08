@@ -1,5 +1,5 @@
 const { db } = require('../bin/utils/Firebase')
-const { addDoc, collection, query, where, onSnapshot } = require('firebase/firestore')
+const { addDoc, collection, query, where, onSnapshot, orderBy } = require('firebase/firestore')
 const axios = require('axios')
 const { exec } = require('child_process');
 
@@ -37,15 +37,44 @@ const garyController = {
 
 const interfaceController = {
     get: (req, res) => {
-        const collectionRef = collection(db, 'CurrentInsurance')
-        const q = query(collectionRef)
-        onSnapshot(q, snapshot => {
-            let customerList = []
+        let queryRef;
+        if(req.query.sort){
+            if(req.query.insurancePrefix){
+                console.log('sort found and prefix found');
+                queryRef = query(collection(db, 'CurrentInsurance'), where('insurancePrefix', '==', req.query.insurancePrefix),orderBy(req.query.sort));
+            } else if (req.query.insuranceLoc) {
+                console.log('sort found and loc found');
+                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceLoc', '==', req.query.insuranceLoc),orderBy(req.query.sort));
+            } else if (req.query.insuranceName){
+                console.log('sort found and name found');
+                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceName', '==', req.query.insuranceName),orderBy(req.query.sort));
+            } else {
+                console.log('sort found and no specific query, fetching all');
+                queryRef = query(collection(db, 'CurrentInsurance'),orderBy(req.query.sort));
+            }
+        } else {
+            if(req.query.insurancePrefix){
+                console.log('prefix found');
+                queryRef = query(collection(db, 'CurrentInsurance'), where('insurancePrefix', '==', req.query.insurancePrefix));
+            } else if (req.query.insuranceLoc) {
+                console.log('loc found');
+                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceLoc', '==', req.query.insuranceLoc));
+            } else if (req.query.insuranceName){
+                console.log('name found');
+                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceName', '==', req.query.insuranceName));
+            } else {
+                console.log('no specific query, fetching all');
+                queryRef = query(collection(db, 'CurrentInsurance'));
+            }
+        }
+    
+        onSnapshot(queryRef, snapshot => {
+            let customerList = [];
             snapshot.docs.forEach(doc => {
-                customerList.push({data: doc.data(), id: doc.id})
-            })
-            res.send(customerList).status(200)
-        })
+                customerList.push({data: doc.data(), id: doc.id});
+            });
+            res.send(customerList).status(200);
+        });
     },
     update: (req, res) => {
 
