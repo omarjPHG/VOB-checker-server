@@ -42,4 +42,4 @@ const processCSV = async (filePath) => {
   makeRequests(data);
 };
 
-processCSV('./Zoho6.csv');
+processCSV('./Zoho.csv');

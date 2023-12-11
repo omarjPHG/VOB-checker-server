@@ -95,8 +95,8 @@ const dbLoading = {
                     'insuranceName': insuranceName,
                     'insuranceLoc': insuranceLoc,
                     'insurancePrefix': insurancePrefix,
-                    'dailyRate': dailyRate,
-                    'lastUpdate': lastUpdate,
+                    'dailyRate': parseFloat(dailyRate.replace(/[^0-9.]/g, '')),
+                    'lastUpdate': new Date(lastUpdate),
                     'vob': response.vob === null ? 'Unknown' : response.vob,
                     'admitted': response.admitted === null ? 'Unknown' : response.vob,
                     'callInDate': new Date()
@@ -120,7 +120,7 @@ const dbLoading = {
 const runPythonScript = (prefix) => {
     console.log('Sending python request')
     return new Promise((resolve, reject) => {
-        exec(`python3 ./server/controller/evaluation.py ${prefix}`, (error, stdout, stderr) => {
+        exec(`python ./server/controller/evaluation.py ${prefix}`, (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`);
                 reject(error);
