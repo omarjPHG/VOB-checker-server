@@ -41,10 +41,10 @@ const interfaceController = {
         if(req.query.sort){
             if(req.query.insurancePrefix){
                 console.log('sort found and prefix found');
-                queryRef = query(collection(db, 'CurrentInsurance'), where('insurancePrefix', '==', req.query.insurancePrefix),orderBy(req.query.sort));
+                queryRef = query(collection(db, 'CurrentInsurance'), where('insurancePrefix', '==', req.query.insurancePrefix.toUpperCase()),orderBy(req.query.sort));
             } else if (req.query.insuranceLoc) {
                 console.log('sort found and loc found');
-                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceLoc', '==', req.query.insuranceLoc),orderBy(req.query.sort));
+                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceLoc', '==', req.query.insuranceLoc.toUpperCase()),orderBy(req.query.sort));
             } else if (req.query.insuranceName){
                 console.log('sort found and name found');
                 queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceName', '==', req.query.insuranceName),orderBy(req.query.sort));
@@ -55,10 +55,10 @@ const interfaceController = {
         } else {
             if(req.query.insurancePrefix){
                 console.log('prefix found');
-                queryRef = query(collection(db, 'CurrentInsurance'), where('insurancePrefix', '==', req.query.insurancePrefix));
+                queryRef = query(collection(db, 'CurrentInsurance'), where('insurancePrefix', '==', req.query.insurancePrefix.toUpperCase()));
             } else if (req.query.insuranceLoc) {
                 console.log('loc found');
-                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceLoc', '==', req.query.insuranceLoc));
+                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceLoc', '==', req.query.insuranceLoc.toUpperCase()));
             } else if (req.query.insuranceName){
                 console.log('name found');
                 queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceName', '==', req.query.insuranceName));
