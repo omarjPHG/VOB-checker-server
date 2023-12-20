@@ -38,36 +38,13 @@ const garyController = {
 const interfaceController = {
     get: (req, res) => {
         let queryRef;
-        if(req.query.sort){
-            if(req.query.insurancePrefix){
-                console.log('sort found and prefix found');
-                queryRef = query(collection(db, 'CurrentInsurance'), where('insurancePrefix', '==', req.query.insurancePrefix.toUpperCase()),orderBy(req.query.sort));
-            } else if (req.query.insuranceLoc) {
-                console.log('sort found and loc found');
-                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceLoc', '==', req.query.insuranceLoc.toUpperCase()),orderBy(req.query.sort));
-            } else if (req.query.insuranceName){
-                console.log('sort found and name found');
-                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceName', '==', req.query.insuranceName),orderBy(req.query.sort));
-            } else {
-                console.log('sort found and no specific query, fetching all');
-                queryRef = query(collection(db, 'CurrentInsurance'),orderBy(req.query.sort));
-            }
+        if(req.query.insurancePrefix && req.query.sort){
+            queryRef = query(collection(db, 'CurrentInsurance'), where('insurancePrefix', '==', req.query.insurancePrefix.toUpperCase()),orderBy(req.query.sort));
+        } else if (req.query.sort) {
+            queryRef = query(collection(db, 'CurrentInsurance'), orderBy(req.query.sort));
         } else {
-            if(req.query.insurancePrefix){
-                console.log('prefix found');
-                queryRef = query(collection(db, 'CurrentInsurance'), where('insurancePrefix', '==', req.query.insurancePrefix.toUpperCase()));
-            } else if (req.query.insuranceLoc) {
-                console.log('loc found');
-                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceLoc', '==', req.query.insuranceLoc.toUpperCase()));
-            } else if (req.query.insuranceName){
-                console.log('name found');
-                queryRef = query(collection(db, 'CurrentInsurance'), where('insuranceName', '==', req.query.insuranceName));
-            } else {
-                console.log('no specific query, fetching all');
-                queryRef = query(collection(db, 'CurrentInsurance'));
-            }
+            queryRef = query(collection(db, 'CurrentInsurance'));
         }
-    
         onSnapshot(queryRef, snapshot => {
             let customerList = [];
             snapshot.docs.forEach(doc => {
@@ -78,6 +55,85 @@ const interfaceController = {
     },
     update: (req, res) => {
 
+    }
+}
+
+const interfaceControllerHistorical = {
+    get: (req, res) => {
+        let queryRef;
+        if(req.query.insurancePrefix && req.query.sort){
+            queryRef = query(collection(db, 'BillingDetails'), where('prefix', '==', req.query.insurancePrefix.toUpperCase()),orderBy(req.query.sort));
+        } else if (req.query.sort) {
+            queryRef = query(collection(db, 'BillingDetails'), orderBy(req.query.sort));
+        } else {
+            queryRef = query(collection(db, 'BillingDetails'));
+        }
+        onSnapshot(queryRef, snapshot => {
+            let customerList = [];
+            snapshot.docs.forEach(doc => {
+                customerList.push({data: doc.data(), id: doc.id});
+            });
+            res.send(customerList).status(200);
+        });
+    },
+    update: (req, res) => {
+
+    }
+}
+
+/*
+
+const HistoricalBillingAddRecords:
+- lets user input new records into the historical-info table
+- adds closed records that are located in their appropriate spreadsheets
+INPUT: 
+    full name, 
+    patient name, 
+    amount charged,
+    amount paid to facility,
+    insurance company,
+    policy number,
+    prefix,
+    facility,
+    drug of choice
+    deductable
+    network type
+*/
+
+const HistoricalBillingAddRecords = {
+    post: (req, res) => {
+        let insuranceName = req.body.insruanceCompany
+        let insurancePrefix = req.body.insurancePrefix
+        let policyNumber = req.body.policyNumber
+        let amountCharged = req.body.amountCharged
+        let deductable = req.body.deductable
+        let amountPaid = req.body.amountPaid 
+        let network = req.body.network 
+        let facility = req.body.facility 
+        let detoxDays = req.body.detoxDays 
+        let redisentialDays = req.body.residentialDays 
+        let drugOfChoice = req.body.drugOfChoice // kipu api
+        const dataDoc = {
+            'insuranceName':insuranceName,
+            'insurancePrefix': insurancePrefix,
+            'policyNumber': policyNumber,
+            'amountCharged': amountCharged,
+            'deductable': deductable,
+            'amountPaid': amountPaid,
+            'network': network,
+            'facility': facility,
+            'detoxDays': detoxDays,
+            'redisentialDays': redisentialDays,
+            'drugOfChoice': drugOfChoice
+        }
+        let collectionRef = collection(db, 'BillingDetails')
+        addDoc(collectionRef, dataDoc)
+            .then(response => {
+                res.send(`Record added for ${insuranceName} - ${insurancePrefix} `).status(200)
+            })
+            .catch(error => {
+                res.send(`Error: ${error}`).status(400)
+            })
     }
 }
 
@@ -158,4 +214,4 @@ function extractJsonObject(responseString) {
     return null;
 }
 
-module.exports = {garyController, dbLoading, interfaceController}
+module.exports = {garyController, dbLoading, interfaceController, interfaceControllerHistorical, HistoricalBillingAddRecords}
